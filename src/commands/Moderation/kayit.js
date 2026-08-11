@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
-import { successEmbed, warningEmbed } from '../../utils/embeds.js';
+import { successEmbed } from '../../utils/embeds.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 import { logger } from '../../utils/logger.js';
 import { replyUserError, ErrorTypes } from '../../utils/errorHandler.js';
@@ -8,7 +8,7 @@ export default {
     data: new SlashCommandBuilder()
         .setName('kayit')
         .setDescription('Bir kullanıcının kaydını yapar ve rollerini düzenler')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles) // Yetkili izni
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
         .setDMPermission(false)
         .addUserOption((option) =>
             option
@@ -19,18 +19,18 @@ export default {
         .addStringOption((option) =>
             option
                 .setName('isim')
-                .setDescription("Kullanıcının adı")
+                .setDescription('Kullanıcının adı')
                 .setRequired(true),
         )
         .addIntegerOption((option) =>
             option
                 .setName('yas')
-                .setDescription("Kullanıcının yaşı")
+                .setDescription('Kullanıcının yaşı')
                 .setMinValue(5)
                 .setMaxValue(100)
                 .setRequired(true),
         ),
-    category: 'Community',
+    category: 'Moderation',
 
     async execute(interaction, config, client) {
         await InteractionHelper.safeDefer(interaction, { ephemeral: true });
@@ -53,16 +53,16 @@ export default {
             const newNickname = `${name} | ${age}`;
             await member.setNickname(newNickname);
 
-            // 2. Rolleri Ayarlama (Buradaki isimleri kendi sunucundaki rol isimleriyle değiştirebilirsin)
-            const unverifiedRoleName = 'Kayıtsız'; // Alınacak rol
-            const registeredRoleName = 'Kayıtlı';   // Verilecek 1. rol
-            const specialRoleName = "Allah'ın Aslanı"; // Verilecek 2. rol
+            // 2. Rolleri Ayarlama (Sunucunuzdaki rol isimleriyle birebir aynı olmalıdır)
+            const unverifiedRoleName = 'Kayıtsız';
+            const registeredRoleName = 'Kayıtlı';
+            const specialRoleName = "Allah'ın Aslanı";
 
             const unverifiedRole = interaction.guild.roles.cache.find(r => r.name === unverifiedRoleName);
             const registeredRole = interaction.guild.roles.cache.find(r => r.name === registeredRoleName);
             const specialRole = interaction.guild.roles.cache.find(r => r.name === specialRoleName);
 
-            // Rol işlemleri
+            // Rol işlemleri (Kayıtsız rolü alınır, Kayıtlı ve özel rol verilir)
             if (unverifiedRole && member.roles.cache.has(unverifiedRole.id)) {
                 await member.roles.remove(unverifiedRole);
             }
