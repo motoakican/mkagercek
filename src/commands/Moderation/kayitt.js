@@ -49,11 +49,11 @@ export default {
         }
 
         try {
-            // 1. İsim ve Yaş Ayarlama (Örn: Emre | 15)
+            // 1. İsim ve Yaş Ayarlama
             const newNickname = `${name} | ${age}`;
             await member.setNickname(newNickname);
 
-            // 2. Rolleri Ayarlama (Sunucunuzdaki rol isimleriyle birebir aynı olmalıdır)
+            // 2. Rolleri Tanımlama
             const unverifiedRoleName = 'Kayıtsız';
             const registeredRoleName = 'Kayıtlı';
             const specialRoleName = "Allah'ın Aslanı";
@@ -62,15 +62,15 @@ export default {
             const registeredRole = interaction.guild.roles.cache.find(r => r.name === registeredRoleName);
             const specialRole = interaction.guild.roles.cache.find(r => r.name === specialRoleName);
 
-            // Rol işlemleri (Kayıtsız rolü alınır, Kayıtlı ve özel rol verilir)
+            // 3. Rol İşlemleri Güvenlik Kontrolleri
             if (unverifiedRole && member.roles.cache.has(unverifiedRole.id)) {
-                await member.roles.remove(unverifiedRole);
+                await member.roles.remove(unverifiedRole).catch(() => {});
             }
             if (registeredRole) {
-                await member.roles.add(registeredRole);
+                await member.roles.add(registeredRole).catch(() => {});
             }
             if (specialRole) {
-                await member.roles.add(specialRole);
+                await member.roles.add(specialRole).catch(() => {});
             }
 
             const embed = successEmbed(
@@ -88,7 +88,7 @@ export default {
             logger.error('Kayıt komutu çalıştırılırken hata oluştu:', error);
             return await replyUserError(interaction, {
                 type: ErrorTypes.UNKNOWN,
-                message: 'Kullanıcı kayıt edilirken bir hata oluştu. Botun yetkilerinin ve rol sıralamasının yeterli olduğundan emin olun.',
+                message: 'Kullanıcı kayıt edilirken bir hata oluştu. Botun rolünün verilecek rollerden üstte olduğundan ve "Rolleri Yönet" yetkisine sahip olduğundan emin olun.',
             });
         }
     },
